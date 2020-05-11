@@ -1,0 +1,45 @@
+.centered-block {
+  text-align: center;
+  margin-top: 20%;
+  padding: 15px;
+}
+
+.alert {
+  margin-top: 4px;
+  animation-name: fade-in;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+}
+
+input {
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+nav {
+  margin-bottom: 8px;
+}
+
+h3 {
+  text-align: left;
+}
+
+#username {
+  padding-right: 20px;
+}
+
+#add-channel-button {
+  bottom: 0%;
+  position: fixed;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0%;
+  }
+  100% {
+    opacity: 100%;
+  }
+}
+
+/*# sourceMappingURL=base.css.map */

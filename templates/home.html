@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    flack - Home
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='scripts/home.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-xs">
+            <table id="channels-table">
+                <th>
+                    <td><h3>channels</h3></td>
+                </th>
+                {% for channel in channels %}
+                    <tr>
+                        <td>{{ channel.name }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td>No channels! Maybe you should add one!</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <hr>
+            <input id="add-channel-name" class="form-control" type="text" placeholder="channel name" name="channelName">
+            <br>
+            <input id="button-add-channel" type="submit" class="btn btn-primary" value="add channel">
+        </div>
+        <div class="col-md">
+            <div class="input-group">
+                <input id="input-add-message" class="form-control" type="text" placeholder="message" name="addMessage">
+                <div class="input-group-append">
+                    <input id="button-send-message" type="submit" class="btn btn-primary" value="send">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
