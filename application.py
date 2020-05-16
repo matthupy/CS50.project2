@@ -158,19 +158,68 @@ def create_account():
 @app.route("/")
 @flask_login.login_required
 def index():
+    # Get Channels
     sSQL = f"select * from channels order by name"
     channels = db.execute(sSQL).fetchall()
-    return render_template("home.html", user=flask_login.current_user, channels=channels)
 
-@app.route("/add_channel", methods=["POST"])
+    # Get messages for default channel
+    sSQL = f"select * from messages where channel_name = :channel_name"
+    channel_name = channels[0]["name"]
+    messages = db.execute(sSQL, {"channel_name":channel_name}).fetchall()
 
+    return render_template("home.html", user=flask_login.current_user, channels=channels, messages=messages)
+
+@app.route("/messages", methods=["POST"])
+def messages():
+
+    # Get the channel name for the messages
+    channel_name = request.form.get("channel")
+
+    # Make sure the channel name is valid
+    data = []
+    if channel_name is None:
+        return jsonify(data)
+    
+    # Get messages from the database
+    sSQL = "select channel_name, message, username, timestamp from messages where channel_name = :channel_name order by timestamp desc limit 100"
+    messages = db.execute(sSQL, {"channel_name":channel_name}).fetchall()
+
+    for message in messages:
+        channel_name = message['channel_name']
+        message_text = message['message']
+        username = message['username']
+        timestamp = message['timestamp']
+
+        current_message = {
+            "channel_name":channel_name,
+            "username":username,
+            "message":message_text,
+            "timestamp":timestamp.strftime("%m/%d/%Y %H:%M:%S")
+        }
+
+        data.append(current_message)
+
+    return jsonify(data)
+
+@socketio.on("get messages")
+def refresh_posts(data):
+    # Get new channel name
+    channel = data["channel"]
+
+    # Use the channel to get the messages in timestamp order
+    sSQL = "select * from messages where channel_name = :channel_name order by timestamp desc"
+    messages = db.execute(sSQL, {"channel_name":channel}).fetchmany(20)
+
+    # Set up return
+    data = {"messages":messages}
+
+    emit("messages refresh", {"data":data, "curr_user":flask_login.current_user.id})
 
 @socketio.on("add channel")
 def add_channel(data):
     """ Add a new channel """
 
     new_channel = data["channel"]
-    #new_channel = request.form.get("channelName").strip()
 
     # Check if the channel exists
     sSQL = f"select * from channels where upper(name) = upper(:name)"
@@ -194,17 +243,19 @@ def add_channel(data):
 def send_message(data):
     channel = data["channel"]
     message = data["message"]
-    username = flask_login.current_user
+    username = flask_login.current_user.id
+    timestamp = datetime.datetime.now().strftime('%m/%d/%Y %H:%M:%S')
+    print(timestamp)
 
     try:
         # Try to insert the message into the database
-        sSQL = f"insert into messages (channel_name, username, message) values (:channel, :message, :username)"
-        db.execute(sSQL, {"channel":channel, "message":message, "username":username})
+        sSQL = f"insert into messages (channel_name, username, message, timestamp) values (:channel, :username, :message, :timestamp)"
+        db.execute(sSQL, {"channel":channel, "message":message, "username":username, "timestamp":timestamp})
         db.commit()
 
         # Set up emit event to update the socket
         data = {"channel":channel, "message":message, "username":username}
-        emit('incoming message', data)
+        emit('messages refresh', data, broadcast=True)
     except:
         raise Exception
 

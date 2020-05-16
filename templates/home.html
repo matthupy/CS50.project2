@@ -13,12 +13,12 @@
     <div class="row">
         <div class="col-xs">
             <table id="channels-table">
-                <th>
-                    <td><h3>channels</h3></td>
-                </th>
+                <tr style="border-bottom: 1px lightgray solid;">
+                    <td style="font-weight:bold; font-size:large; text-align: left;">channels</td>
+                </tr>
                 {% for channel in channels %}
-                    <tr>
-                        <td>{{ channel.name }}</td>
+                    <tr id="{{channel.name}}">
+                        <td class="table-data">{{ channel.name }}</td>
                     </tr>
                 {% else %}
                     <tr>
@@ -37,6 +37,10 @@
                 <div class="input-group-append">
                     <input id="button-send-message" type="submit" class="btn btn-primary" value="send">
                 </div>
+            </div>
+            <hr>
+            <div id="message-area" class="container">
+
             </div>
         </div>
     </div>

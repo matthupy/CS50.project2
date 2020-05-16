@@ -11,6 +11,32 @@
   animation-fill-mode: forwards;
 }
 
+.message {
+  padding: 10px;
+  margin: 20px;
+  margin-right: 50px;
+  border: 1px solid black;
+  border-radius: 25px;
+  background-color: rgba(219, 219, 219, 0.76);
+}
+
+.my-message {
+  margin-right: 20px;
+  margin-left: 50px;
+  background-color: #007bff;
+  color: white;
+  text-align: right;
+}
+
+.message-area {
+  overflow-y: scroll;
+}
+
+.post-username {
+  font-size: small;
+  font-weight: bold;
+}
+
 input {
   margin-top: 4px;
   margin-bottom: 4px;
@@ -22,6 +48,15 @@ nav {
 
 h3 {
   text-align: left;
+}
+
+html, body {
+  height: 100%;
+}
+
+.post-username {
+  font-size: small;
+  font-weight: bold;
 }
 
 #username {
